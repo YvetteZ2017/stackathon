@@ -9,7 +9,7 @@
   "dependencies": {
     "react": "16.0.0",
     "react-native": "0.50.3",
-    "react-native-sound": "^0.10.4"
+    "react-native-sound": "git+https://github.com/zmxv/react-native-sound.git#fix_android_network_sound"
   },
   "devDependencies": {
     "babel-jest": "21.2.0",
