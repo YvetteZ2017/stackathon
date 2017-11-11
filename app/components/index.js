@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-var Sound = require('react-native-sound');
+import Sound from 'react-native-sound';
 import axios from 'axios';
 import { AppRegistry, StyleSheet, Text, View, Button } from 'react-native';
-import { fetchWeatherByCityName } from '../api'
+import { fetchWeatherByCityName, fetchWeatherByCoords } from '../api'
 require('../../secret.js');
 
 
@@ -28,37 +28,61 @@ export default class Main extends Component {
       this.state = {
           zipcode: DEFAULT_ZIPCODE,
           city: DEFAULT_CITY,
+          latitude: null,
+          longitude: null,
+          geo_error: null,
           days: [],
           temp: null,
-          main: {
-              temp: null,
-            temp_min: null,
-            tem_max: null,
-            pressure: null,
-            humidity: null
-            },
-        weather: null
+          temp_min: null,
+          tem_max: null,
+          pressure: null,
+          humidity: null,
+          weather: null,
+          sunrise: null,
+          sunset: null,
+          metric: true
       }
   }
 
-  getForcastByCityName(city, metric) {
-    //   this.setState({city})
+  getWeatherByCityName(city, metric) {
     const cityName = city.replace(/\s/g, '');
-    console.log('city name: ', cityName)
-      fetchWeatherByCityName(cityName, true)
+      fetchWeatherByCityName(cityName, metric)
       .then(res => {
-          console.log('weather data fetched. temp: ', res.list[0].main.temp, 'weather: ', res.list[0].weather.main)
-          const { main, weather } = res.list[0]
+          console.log('weather data fetched. temp: ', res.main.temp, 'weather: ', res.weather[0].main)
+          console.log('coords: ', this.state.latitude, ',', this.state.longitude)
           this.setState({
-            city: res.city.name,
-            temp: main.temp,
-            weather: weather[0].main
+            city: res.name,
+            temp: res.main.temp,
+            weather: res.weather[0].main
           })
       })
   }
 
+  getWeatherByCoords(lat, lon, metric) {
+    fetchWeatherByCoords(lat, lon, metric)
+    .then(res => {
+      this.setState({
+        city: res.name,
+        temp: res.main.temp,
+        weather: res.weather[0].main
+      })
+    })
+  }
+
   componentDidMount () {
-      this.getForcastByCityName(this.state.city, true)
+    navigator.geolocation.getCurrentPosition(position => {
+        this.setState({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          geo_error: null,
+        });
+        this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric);
+      },
+      (error) => this.setState({
+        geo_error: error.message
+      }),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+    );
   }
 
   render() {
@@ -68,7 +92,7 @@ export default class Main extends Component {
         <Text style={styles.welcome}>
           Welcome to My Noise App!
         </Text>
-        <Button title="GET WEATHER" onPress={() => {this.getForcastByCityName(this.state.city, true)}} />
+        <Button title="GET WEATHER" onPress={() => {this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric)}} />
         <Text style={styles.welcome}>{this.state.city}</Text>
         <Text style={styles.weather}>{this.state.weather}</Text>
         <Text style={styles.temp}>{this.state.temp} °C</Text>
