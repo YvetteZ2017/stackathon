@@ -7,6 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "axios": "^0.17.0",
     "react": "16.0.0",
     "react-native": "0.50.3",
     "react-native-sound": "git+https://github.com/zmxv/react-native-sound.git#fix_android_network_sound"
