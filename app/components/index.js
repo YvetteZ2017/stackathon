@@ -56,7 +56,10 @@ export default class Main extends Component {
   getWeatherByCityName(input, metric) {
     const inputArr = input.split(',')
     const cityName = inputArr[0].split(' ').map(e => e.slice(0, 1).toUpperCase() + e.slice(1).toLowerCase()).join('');
-    const countryName = inputArr[1].replace(/\s/g, '').toUpperCase()
+    let countryName = '';
+    if(inputArr.length>1) {
+      countryName = inputArr[1].replace(/\s/g, '').toUpperCase();
+    }
     console.log('cityName: ', cityName, 'countryName: ', countryName)
       fetchWeatherByCityName(cityName, metric, countryName)
       .then(res => {
