@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import Sound from 'react-native-sound';
 import axios from 'axios';
-import { AppRegistry, StatusBar, StyleSheet, Text, View, Button, Image, TextInput } from 'react-native';
+import { AppRegistry, StatusBar, StyleSheet, Text, View, ScrollView, Button, Image, TextInput, KeyboardAvoidingView } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { fetchWeatherByCityName, fetchWeatherByCoords } from '../api'
 import Noise from './Noise';
-require('../../secret.js');
+import AutoComplete from './AutoComplete';
+
 
 
 const DEFAULT_ZIPCODE = 10004;
@@ -91,32 +93,35 @@ export default class Main extends Component {
   render() {
     
     return (
+      <KeyboardAwareScrollView
+        style={{backgroundColor: "#fefffc"}}
+        resetScrollToCoords={{ x: 0, y: 0 }}
+        contentContainerStyle={styles.container}
+        scrollEnabled={false}
+        >
+      <StatusBar 
+        backgroundColor="#fefffc"
+        barStyle="dark-content"
+        translucent={true} />
+      <ScrollView>
       <View style={styles.container}>
       <View style={styles.border}>
-        <StatusBar 
-          backgroundColor="#F5FCFF"
-          barStyle="dark-content"
-          translucent={true} />
+       
         <Image
-          style={{width: 350, height: 350}}
+          style={styles.weatherImg}
           source={require('../../assets/images/default.jpg')}
           />
         <Button title="GET WEATHER" onPress={() => {this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric)}} />
+        <AutoComplete metric={this.state.metric} getFunc={this.getWeatherByCoords}/>
         <Text style={styles.welcome}>{this.state.city}</Text>
         <Text style={styles.weather}>{this.state.weather}</Text>
         <Text style={styles.temp}>{this.state.temp} °C</Text>
-        <TextInput style={styles.texpinput}
-                   onChangeText={this.onChangeText}
-                   onSubmitEditing={event => this.getWeatherByCityName(this.state.inputValue, this.state.metric)}
-                   placeholder="City name, Country Abbreviation (optional)"
-                   clearButtonMode={"always"}
-                   clearTextOnFocus={true}
-                   enablesReturnKeyAutomatically={true}
-                   returnKeyType={"search"} />
         <Noise />
       
       </View>
       </View>
+      </ScrollView>
+      </KeyboardAwareScrollView>
     );
   }
 }
@@ -126,14 +131,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-    marginTop: 20,
+    backgroundColor: '#fefffc',
+    marginTop: 10,
   },
   border: {
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#fefffc',
     margin: 20,
-    borderColor: "black",
-    borderWidth: 3
+    borderColor: "#fefffc",
   },
   textinput: {
     height: 40,
@@ -145,24 +149,26 @@ const styles = StyleSheet.create({
   },
   welcome: {
     fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+    marginHorizontal: 2,
+    marginVertical: 10,
     color: "#5D707F"
   },
   temp: {
     fontSize: 40,
-    textAlign: 'center',
+    // textAlign: 'center',
     margin: 10,
     color: "#5D707F"
   },
   weather: {
     fontSize: 18,
-    textAlign: 'center',
+    // textAlign: 'center',
     margin: 2,
     color: "#5D707F"
   },
   weatherImg: {
     padding: 10,
+    width: 320, 
+    height: 320
   }
 });
 

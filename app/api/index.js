@@ -1,12 +1,9 @@
 var axios = require('axios');
-require('../../secret.js');
+const { weather_api_key } = require('../../secret.js');
 
-export const api_key = process.env.WEATHER_API_KEY;
+const api_key = weather_api_key;
 
 export const fetchWeatherByCityName = (city, metric, country) => {
-    if (!country) {
-        country = '';
-    }
     let url = `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${api_key}`;
     if (metric) {
         url = `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&units=metric&appid=${api_key}`;
