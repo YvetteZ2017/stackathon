@@ -1,26 +1,15 @@
 import React, { Component } from 'react';
 import Sound from 'react-native-sound';
 import axios from 'axios';
-import { AppRegistry, StyleSheet, Text, View, Button } from 'react-native';
+import { AppRegistry, StatusBar, StyleSheet, Text, View, Button, Image, TextInput } from 'react-native';
 import { fetchWeatherByCityName, fetchWeatherByCoords } from '../api'
+import Noise from './Noise';
 require('../../secret.js');
 
 
-Sound.setCategory('Playback', true);
-
-const songUrl1 = require('../../assets/sounds/4.mp3');
 const DEFAULT_ZIPCODE = 10004;
 const DEFAULT_CITY = 'New York';
 
-const noiseSong = new Sound(songUrl1, undefined, error => {
-  if (error) {
-    console.log('error loading sound', error)
-    return
-  }
-  noiseSong.play(() => {
-    // noiseSong.stop()
-  })
-})
 
 export default class Main extends Component {
   constructor() {
@@ -40,13 +29,36 @@ export default class Main extends Component {
           weather: null,
           sunrise: null,
           sunset: null,
-          metric: true
+          metric: true,
+          inputValue: ''
       }
+    this.onChangeText = this.onChangeText.bind(this);
+    this.getWeatherByCityName = this.getWeatherByCityName.bind(this);
+    this.getWeatherByCoords = this.getWeatherByCoords.bind(this);
   }
 
-  getWeatherByCityName(city, metric) {
-    const cityName = city.replace(/\s/g, '');
-      fetchWeatherByCityName(cityName, metric)
+  componentDidMount () {
+    navigator.geolocation.getCurrentPosition(position => {
+        this.setState({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          geo_error: null,
+        });
+        this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric);
+      },
+      (error) => this.setState({
+        geo_error: error.message
+      }),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+    );
+  }
+
+  getWeatherByCityName(input, metric) {
+    const inputArr = input.split(',')
+    const cityName = inputArr[0].split(' ').map(e => e.slice(0, 1).toUpperCase() + e.slice(1).toLowerCase()).join('');
+    const countryName = inputArr[1].replace(/\s/g, '').toUpperCase()
+    console.log('cityName: ', cityName, 'countryName: ', countryName)
+      fetchWeatherByCityName(cityName, metric, countryName)
       .then(res => {
           console.log('weather data fetched. temp: ', res.main.temp, 'weather: ', res.weather[0].main)
           console.log('coords: ', this.state.latitude, ',', this.state.longitude)
@@ -69,44 +81,38 @@ export default class Main extends Component {
     })
   }
 
-  componentDidMount () {
-    navigator.geolocation.getCurrentPosition(position => {
-        this.setState({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          geo_error: null,
-        });
-        this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric);
-      },
-      (error) => this.setState({
-        geo_error: error.message
-      }),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
-    );
+  onChangeText(input) {
+    this.setState({inputValue: input})
   }
 
   render() {
     
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to My Noise App!
-        </Text>
+      <View style={styles.border}>
+        <StatusBar 
+          backgroundColor="#F5FCFF"
+          barStyle="dark-content"
+          translucent={true} />
+        <Image
+          style={{width: 350, height: 350}}
+          source={require('../../assets/images/default.jpg')}
+          />
         <Button title="GET WEATHER" onPress={() => {this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric)}} />
         <Text style={styles.welcome}>{this.state.city}</Text>
         <Text style={styles.weather}>{this.state.weather}</Text>
         <Text style={styles.temp}>{this.state.temp} °C</Text>
-        <Button title="NOISE" onPress={() => {
-        noiseSong.play((success) => {
-            if (success) {
-            noiseSong.stop()
-            } else {
-            console.log('playback failed due to audio decoding errors')
-            }
-        })
-        }}
-        />
+        <TextInput style={styles.texpinput}
+                   onChangeText={this.onChangeText}
+                   onSubmitEditing={event => this.getWeatherByCityName(this.state.inputValue, this.state.metric)}
+                   placeholder="City name, Country Abbreviation (optional)"
+                   clearButtonMode={"always"}
+                   clearTextOnFocus={true}
+                   enablesReturnKeyAutomatically={true}
+                   returnKeyType={"search"} />
+        <Noise />
       
+      </View>
       </View>
     );
   }
@@ -117,26 +123,44 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#5D707F',
+    backgroundColor: '#F5FCFF',
+    marginTop: 20,
+  },
+  border: {
+    backgroundColor: '#F5FCFF',
+    margin: 20,
+    borderColor: "black",
+    borderWidth: 3
+  },
+  textinput: {
+    height: 40,
+    borderColor: '#666',
+    borderWidth: 1,
+    padding: 20,
+    marginVertical: 20,
+    marginHorizontal: 20,
   },
   welcome: {
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
-    color: "#F5FCFF"
+    color: "#5D707F"
   },
   temp: {
     fontSize: 40,
     textAlign: 'center',
     margin: 10,
-    color: "#F5FCFF"
+    color: "#5D707F"
   },
   weather: {
     fontSize: 18,
     textAlign: 'center',
     margin: 2,
-    color: "#F5FCFF"
+    color: "#5D707F"
   },
+  weatherImg: {
+    padding: 10,
+  }
 });
 
 AppRegistry.registerComponent('Main', () => Main);
