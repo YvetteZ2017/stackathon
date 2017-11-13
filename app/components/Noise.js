@@ -38,7 +38,7 @@ export default class Noise extends Component {
 
     return (
       <View style={styles.container}>
-        <Button title="NOISE" onPress={this.playNoise} />
+        <Button title="NOISE" color="white" onPress={this.playNoise} />
       </View>
     );
   }

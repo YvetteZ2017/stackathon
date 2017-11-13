@@ -3,15 +3,12 @@ import Sound from 'react-native-sound';
 import axios from 'axios';
 import { AppRegistry, StatusBar, StyleSheet, Text, View, ScrollView, Button, Image, TextInput, KeyboardAvoidingView } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { fetchWeatherByCityName, fetchWeatherByCoords } from '../api'
-import Drawer from 'react-native-drawer';
+import { fetchWeatherByCoords, fetchForecastByCoords } from '../api'
+import Pages from 'react-native-pages';
 import Noise from './Noise';
-import DrawerContent from './DrawerContent';
 import AutoComplete from './AutoComplete';
 
 
-
-const DEFAULT_ZIPCODE = 10004;
 const DEFAULT_CITY = 'New York';
 
 
@@ -19,26 +16,19 @@ export default class Main extends Component {
   constructor() {
       super();
       this.state = {
-          zipcode: DEFAULT_ZIPCODE,
           city: DEFAULT_CITY,
           latitude: null,
           longitude: null,
           geo_error: null,
-          days: [],
           temp: null,
-          temp_min: null,
-          tem_max: null,
-          pressure: null,
-          humidity: null,
           weather: null,
           sunrise: null,
           sunset: null,
           metric: true,
-          inputValue: ''
+          forecastList: []
       }
-    this.onChangeText = this.onChangeText.bind(this);
-    this.getWeatherByCityName = this.getWeatherByCityName.bind(this);
     this.getWeatherByCoords = this.getWeatherByCoords.bind(this);
+    this.getForecastByCoords = this.getForecastByCoords.bind(this);    
   }
 
   componentDidMount () {
@@ -49,6 +39,7 @@ export default class Main extends Component {
           geo_error: null,
         });
         this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric);
+        this.getForecastByCoords(this.state.latitude, this.state.longitude, this.state.metric);
       },
       (error) => this.setState({
         geo_error: error.message
@@ -57,26 +48,7 @@ export default class Main extends Component {
     );
   }
 
-  getWeatherByCityName(input, metric) {
-    const inputArr = input.split(',')
-    const cityName = inputArr[0].split(' ').map(e => e.slice(0, 1).toUpperCase() + e.slice(1).toLowerCase()).join('');
-    let countryName = '';
-    if(inputArr.length>1) {
-      countryName = inputArr[1].replace(/\s/g, '').toUpperCase();
-    }
-    console.log('cityName: ', cityName, 'countryName: ', countryName)
-      fetchWeatherByCityName(cityName, metric, countryName)
-      .then(res => {
-          console.log('weather data fetched. temp: ', res.main.temp, 'weather: ', res.weather[0].main)
-          console.log('coords: ', this.state.latitude, ',', this.state.longitude)
-          this.setState({
-            city: res.name,
-            temp: res.main.temp,
-            weather: res.weather[0].main
-          })
-      })
-  }
-
+  
   getWeatherByCoords(lat, lon, metric) {
     fetchWeatherByCoords(lat, lon, metric)
     .then(res => {
@@ -88,55 +60,73 @@ export default class Main extends Component {
     })
   }
 
-  onChangeText(input) {
-    this.setState({inputValue: input})
+  getForecastByCoords(lat, lon, metric) {
+    fetchForecastByCoords(lat, lon, metric)
+    .then(res => {
+      this.setState({
+        forecastList: res.list
+      })
+    })
   }
+
 
   render() {
     
     return (
-      <Drawer content={<DrawerContent />}
-      type="overlay"
-      openDrawerOffset={0.382}
-      closedDrawerOffset={0.02}
-      tapToClose={true}
-      styles={drawerStyles}
-      tweenHandler={(ratio) => ({
-        drawerOverlay: { opacity: ratio, backgroundColor: "#08327d" }
-      })}
->
-      <KeyboardAwareScrollView
-        style={{backgroundColor: "white"}}
-        resetScrollToCoords={{ x: 0, y: 0 }}
-        contentContainerStyle={styles.container}
-        scrollEnabled={false}
-        >
-      <StatusBar 
-        backgroundColor="white"
-        barStyle="dark-content"
-        translucent={true} />
-      <ScrollView>
-      <View style={styles.container}>
-      <View style={styles.border}>
-       
-        <Image
-          style={styles.weatherImg}
-          source={require('../../assets/images/default.jpg')}
-          />
-        <Button title="GET WEATHER" onPress={() => {this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric)}} />
-        <AutoComplete metric={this.state.metric} getFunc={this.getWeatherByCoords}/>
-        <Text style={styles.welcome}>{this.state.city}</Text>
-        <Text style={styles.weather}>{this.state.weather}</Text>
-        <Text style={styles.temp}>{this.state.temp} °C</Text>
-        <Noise />
-      
-      </View>
-      </View>
-      </ScrollView>
-      </KeyboardAwareScrollView>
+      <Pages>
+        <View style={{flex: 1}}>
+        <KeyboardAwareScrollView
+          style={{backgroundColor: "white"}}
+          resetScrollToCoords={{ x: 0, y: 0 }}
+          contentContainerStyle={styles.container}
+          scrollEnabled={false}
+          >
+        <StatusBar 
+          backgroundColor="white"
+          barStyle="dark-content"
+          translucent={true} />
+        <ScrollView>
+          <View style={styles.container}>
+          <View style={styles.border}>
+        
+            <Image
+              style={styles.weatherImg}
+              source={require('../../assets/images/hot.jpg')}
+            />
+            <Text style={styles.welcome}>{this.state.city}</Text>
+            <Text style={styles.weather}>{this.state.weather}</Text>
+            {
+              this.state.metric ? 
+              <Text style={styles.temp}>{this.state.temp} °C</Text> 
+              : <Text style={styles.temp}>{this.state.temp} °F</Text>
+            }
+            
+            
+            </View>
+            </View>
+            </ScrollView> 
+            </KeyboardAwareScrollView>
+            </View>
+            
+        <View style={styles.container_forecast}>
+          <Text style={styles.welcome}>Forcast</Text>
+          {
+            this.state.forecastList.map(element => (
+              this.state.metric ? 
+              <Text style={styles.weather} key={element.dt}>- {element.dt_txt}  -  {element.main.temp} °C  -  {element.weather.main}</Text>
+              :             <Text style={styles.weather} key={element.dt}>- {element.dt_txt}  -  {element.main.temp} °F  -  {element.weather.main}</Text>            
+
+            ))
+          }
+        </View> 
+            
+        <View style={styles.container}>
+          <AutoComplete metric={this.state.metric} getFunc={this.getWeatherByCoords}/>        
+          <Button title="LOCAL WEATHER" onPress={() => {this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric)}} />
+          <Noise />
+        </View>        
+      </Pages>
      
-     
-      </Drawer>
     );
   }
 }
@@ -151,7 +141,9 @@ const styles = StyleSheet.create({
   },
   border: {
     backgroundColor: 'white',
-    margin: 20,
+    marginVertical: 20,
+    marginLeft: 10,
+    marginRight: 20,
     borderColor: "white",
   },
   textinput: {
@@ -184,7 +176,23 @@ const styles = StyleSheet.create({
     padding: 10,
     width: 320, 
     height: 320
-  }
+  },
+  container_forecast: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    marginTop: 10,
+    backgroundColor: '#08327d'
+  },
+  container_control: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    marginTop: 10,
+    backgroundColor: 'black'
+  },
 });
 const drawerStyles = {
   // drawer: { shadowColor: 'white', shadowOpacity: 0.7, shadowRadius: 1},

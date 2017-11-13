@@ -23,4 +23,16 @@ export const fetchWeatherByCoords = (lat, lon, metric) => {
     .then(res => res.data)
 }
 
-// fetchWeatherByCityName('NewYork', true)
+
+export const fetchForecastByCoords = (lat, lon, metric) => {
+    let url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${api_key}`;
+    if (metric) {
+        url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${api_key}`;
+    }
+    console.log('coords url: ', url)
+    return axios.get(url)
+    .then(res => res.data)
+}
+
+
+
