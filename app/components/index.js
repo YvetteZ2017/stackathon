@@ -6,6 +6,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { fetchWeatherByCityName, fetchWeatherByCoords } from '../api'
 import Drawer from 'react-native-drawer';
 import Noise from './Noise';
+import DrawerContent from './DrawerContent';
 import AutoComplete from './AutoComplete';
 
 
@@ -94,48 +95,47 @@ export default class Main extends Component {
   render() {
     
     return (
-      // <KeyboardAwareScrollView
-      //   style={{backgroundColor: "white"}}
-      //   resetScrollToCoords={{ x: 0, y: 0 }}
-      //   contentContainerStyle={styles.container}
-      //   scrollEnabled={false}
-      //   >
-      // <StatusBar 
-      //   backgroundColor="white"
-      //   barStyle="dark-content"
-      //   translucent={true} />
-      // <ScrollView>
-      // <View style={styles.container}>
-      // <View style={styles.border}>
-       
-      //   <Image
-      //     style={styles.weatherImg}
-      //     source={require('../../assets/images/default.jpg')}
-      //     />
-      //   <Button title="GET WEATHER" onPress={() => {this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric)}} />
-      //   <AutoComplete metric={this.state.metric} getFunc={this.getWeatherByCoords}/>
-      //   <Text style={styles.welcome}>{this.state.city}</Text>
-      //   <Text style={styles.weather}>{this.state.weather}</Text>
-      //   <Text style={styles.temp}>{this.state.temp} °C</Text>
-      //   <Noise />
-      
-      // </View>
-      // </View>
-      // </ScrollView>
-      // </KeyboardAwareScrollView>
-      <Drawer content={<Noise />}
-              type="overlay"
-              openDrawerOffset={0.382}
-              closedDrawerOffset={0.02}
-              tapToClose={true}
-              styles={drawerStyles}
-              tweenHandler={(ratio) => ({
-                drawerOverlay: { opacity: ratio, backgroundColor: "#08327d" }
-              })}
-      >
+      <Drawer content={<DrawerContent />}
+      type="overlay"
+      openDrawerOffset={0.382}
+      closedDrawerOffset={0.02}
+      tapToClose={true}
+      styles={drawerStyles}
+      tweenHandler={(ratio) => ({
+        drawerOverlay: { opacity: ratio, backgroundColor: "#08327d" }
+      })}
+>
+      <KeyboardAwareScrollView
+        style={{backgroundColor: "white"}}
+        resetScrollToCoords={{ x: 0, y: 0 }}
+        contentContainerStyle={styles.container}
+        scrollEnabled={false}
+        >
+      <StatusBar 
+        backgroundColor="white"
+        barStyle="dark-content"
+        translucent={true} />
+      <ScrollView>
       <View style={styles.container}>
-        <Text style={styles.weather}>Hello Hello</Text>
-        </View>
+      <View style={styles.border}>
+       
+        <Image
+          style={styles.weatherImg}
+          source={require('../../assets/images/default.jpg')}
+          />
+        <Button title="GET WEATHER" onPress={() => {this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric)}} />
+        <AutoComplete metric={this.state.metric} getFunc={this.getWeatherByCoords}/>
+        <Text style={styles.welcome}>{this.state.city}</Text>
+        <Text style={styles.weather}>{this.state.weather}</Text>
+        <Text style={styles.temp}>{this.state.temp} °C</Text>
+        <Noise />
+      
+      </View>
+      </View>
+      </ScrollView>
+      </KeyboardAwareScrollView>
+     
+     
       </Drawer>
     );
   }
