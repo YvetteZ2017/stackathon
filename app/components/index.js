@@ -4,9 +4,10 @@ import axios from 'axios';
 import { AppRegistry, StatusBar, StyleSheet, Text, View, ScrollView, Button, Image, TextInput, KeyboardAvoidingView } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { fetchWeatherByCoords, fetchForecastByCoords } from '../api'
-import Pages from 'react-native-pages';
+import {Pages} from 'react-native-pages';
 import Noise from './Noise';
 import AutoComplete from './AutoComplete';
+import WeatherImage from './WeatherImage'
 
 
 const DEFAULT_CITY = 'New York';
@@ -23,7 +24,7 @@ export default class Main extends Component {
           temp: null,
           weather: null,
           weather_description: '',
-          weather_id: null,
+          weatherId: null,
           sunrise: null,
           sunset: null,
           metric: true,
@@ -59,7 +60,7 @@ export default class Main extends Component {
         temp: res.main.temp,
         weather: res.weather[0].main,
         weather_description: res.weather[0].description,
-        weather_id: res.weather[0].id
+        weatherId: res.weather[0].id
       })
     })
   }
@@ -75,31 +76,24 @@ export default class Main extends Component {
 
 
   render() {
-    
+    let shorterList = [];
+    this.state.forecastList.forEach((x, i) => {if((i%3)===0) {shorterList.push(x)}});
+
     return (
       <Pages>
         <View style={{flex: 1}}>
-        <KeyboardAwareScrollView
-          style={{backgroundColor: "white"}}
-          resetScrollToCoords={{ x: 0, y: 0 }}
-          contentContainerStyle={styles.container}
-          scrollEnabled={false}
-          >
-        <StatusBar 
-          backgroundColor="white"
-          barStyle="dark-content"
-          translucent={true} />
-        <ScrollView>
+        
+          <StatusBar 
+            backgroundColor="white"
+            barStyle="dark-content"
+            translucent={true} />
+
           <View style={styles.container}>
           <View style={styles.border}>
         
-            <Image
-              style={styles.smallImg}
-              source={require('../../assets/images/hot.jpg')}
-            />
+            <WeatherImage weatherId={this.state.weatherId}/>
             <View style={{flex: 1, flexDirection: 'row'}}>
             <Text style={styles.large}>{this.state.weather}</Text>
-            
             </View>
             <View style={{flex: 2, flexDirection: 'row'}}>
               {
@@ -107,34 +101,58 @@ export default class Main extends Component {
                 <Text style={styles.small}>{this.state.city} | {this.state.temp} °C</Text> 
                 : <Text style={styles.small}>{this.state.city} | {this.state.temp} °F</Text>
               }
-              <Text style={styles.small}>{this.state.weather_description}</Text>
+              <Text style={styles.small}> | {this.state.weather_description}</Text>
             
             </View>
             
             
             </View>
             </View>
-            </ScrollView> 
-            </KeyboardAwareScrollView>
-            </View>
-            
-        <View style={styles.container_forecast}>
-          <Text style={styles.large}>Forcast</Text>
-          {
-            this.state.forecastList.map(element => (
-              this.state.metric ? 
-              <Text style={styles.small} key={element.dt}>- {element.dt_txt}  -  {element.main.temp} °C  -  {element.weather.main}</Text>
-              :             <Text style={styles.small} key={element.dt}>- {element.dt_txt}  -  {element.main.temp} °F  -  {element.weather.main}</Text>            
 
-            ))
-          }
+            </View>
+            
+        <View style={{flex: 1, backgroundColor: '#08327d'}}>
+          
+          <View style={styles.container_secondPage}>
+            <Text style={{
+              fontSize: 40,
+              margin: 10,
+              color: "#fbfbfb",
+              
+            }}>Forecast</Text>
+            {
+              
+              shorterList.map((element,i) => ( 
+                this.state.metric ? 
+                <Text style={{
+                  fontSize: 14,
+                  margin: 4,
+                  color: "white",
+                }} key={element.dt}>- {element.dt_txt}    {element.main.temp} °C    {element.weather[0].main}</Text>
+                : <Text style={{fontSize: 12, margin: 0.5, color: "#558a86",}} key={element.dt}>- {element.dt_txt}    {element.main.temp} °F    {element.weather[0].main}</Text>            
+              
+              ))
+            }
+          </View>
         </View> 
             
-        <View style={styles.container_control}>
-          <AutoComplete metric={this.state.metric} getFunc={this.getWeatherByCoords}/>        
-          <Button title="LOCAL WEATHER" color="white" onPress={() => {this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric)}} />
-          <Noise />
-        </View>        
+        <View style={{flex: 1}}>
+        <KeyboardAwareScrollView
+          style={{backgroundColor: "white"}}
+          resetScrollToCoords={{ x: 0, y: 0 }}
+          contentContainerStyle={styles.container}
+          scrollEnabled={false}
+          >
+          <View style={styles.container}>
+          <View style={styles.border}>
+            <AutoComplete metric={this.state.metric} getFunc={this.getWeatherByCoords}/>        
+            <Button title="LOCAL WEATHER" color="#5D707F" onPress={() => {this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric)}} />
+            <Noise />
+          </View>
+          </View>
+          </KeyboardAwareScrollView>
+        </View>  
+
       </Pages>
      
     );
@@ -152,8 +170,8 @@ const styles = StyleSheet.create({
   border: {
     backgroundColor: 'white',
     marginVertical: 20,
-    marginLeft: 10,
-    marginRight: 20,
+    marginLeft: 15,
+    marginRight: 15,
     borderColor: "white",
   },
   textinput: {
@@ -174,26 +192,28 @@ const styles = StyleSheet.create({
     fontSize: 40,
     // textAlign: 'center',
     margin: 10,
-    color: "#5D707F"
+    color: "black"
   },
   small: {
     fontSize: 16,
-    // textAlign: 'center',
     margin: 2,
     color: "#5D707F"
+  },
+  small2: {
+    fontSize: 16,
+    margin: 2,
+    color: "white"
   },
   weatherImg: {
     padding: 10,
     width: 320, 
     height: 320
   },
-  container_forecast: {
-    flex: 1,
+  container_secondPage: {
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    marginTop: 10,
-    backgroundColor: '#08327d'
+    // alignItems: 'center',
+    backgroundColor: '#08327d',
+    margin: 10
   },
   container_control: {
     flex: 1,

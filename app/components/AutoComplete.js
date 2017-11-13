@@ -32,7 +32,7 @@ export default class GooglePlacesInput extends Component {
             }}
             styles={{
                 textInputContainer: {
-                    backgroundColor: 'white',
+                    backgroundColor: 'grey',
                     borderTopWidth: 0,
                     borderBottomWidth:0
                 },
