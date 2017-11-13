@@ -22,10 +22,12 @@ export default class Main extends Component {
           geo_error: null,
           temp: null,
           weather: null,
+          weather_description: '',
+          weather_id: null,
           sunrise: null,
           sunset: null,
           metric: true,
-          forecastList: []
+          forecastList: [],
       }
     this.getWeatherByCoords = this.getWeatherByCoords.bind(this);
     this.getForecastByCoords = this.getForecastByCoords.bind(this);    
@@ -55,7 +57,9 @@ export default class Main extends Component {
       this.setState({
         city: res.name,
         temp: res.main.temp,
-        weather: res.weather[0].main
+        weather: res.weather[0].main,
+        weather_description: res.weather[0].description,
+        weather_id: res.weather[0].id
       })
     })
   }
@@ -90,16 +94,22 @@ export default class Main extends Component {
           <View style={styles.border}>
         
             <Image
-              style={styles.weatherImg}
+              style={styles.smallImg}
               source={require('../../assets/images/hot.jpg')}
             />
-            <Text style={styles.welcome}>{this.state.city}</Text>
-            <Text style={styles.weather}>{this.state.weather}</Text>
-            {
-              this.state.metric ? 
-              <Text style={styles.temp}>{this.state.temp} °C</Text> 
-              : <Text style={styles.temp}>{this.state.temp} °F</Text>
-            }
+            <View style={{flex: 1, flexDirection: 'row'}}>
+            <Text style={styles.large}>{this.state.weather}</Text>
+            
+            </View>
+            <View style={{flex: 2, flexDirection: 'row'}}>
+              {
+                this.state.metric ? 
+                <Text style={styles.small}>{this.state.city} | {this.state.temp} °C</Text> 
+                : <Text style={styles.small}>{this.state.city} | {this.state.temp} °F</Text>
+              }
+              <Text style={styles.small}>{this.state.weather_description}</Text>
+            
+            </View>
             
             
             </View>
@@ -109,20 +119,20 @@ export default class Main extends Component {
             </View>
             
         <View style={styles.container_forecast}>
-          <Text style={styles.welcome}>Forcast</Text>
+          <Text style={styles.large}>Forcast</Text>
           {
             this.state.forecastList.map(element => (
               this.state.metric ? 
-              <Text style={styles.weather} key={element.dt}>- {element.dt_txt}  -  {element.main.temp} °C  -  {element.weather.main}</Text>
-              :             <Text style={styles.weather} key={element.dt}>- {element.dt_txt}  -  {element.main.temp} °F  -  {element.weather.main}</Text>            
+              <Text style={styles.small} key={element.dt}>- {element.dt_txt}  -  {element.main.temp} °C  -  {element.weather.main}</Text>
+              :             <Text style={styles.small} key={element.dt}>- {element.dt_txt}  -  {element.main.temp} °F  -  {element.weather.main}</Text>            
 
             ))
           }
         </View> 
             
-        <View style={styles.container}>
+        <View style={styles.container_control}>
           <AutoComplete metric={this.state.metric} getFunc={this.getWeatherByCoords}/>        
-          <Button title="LOCAL WEATHER" onPress={() => {this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric)}} />
+          <Button title="LOCAL WEATHER" color="white" onPress={() => {this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric)}} />
           <Noise />
         </View>        
       </Pages>
@@ -154,20 +164,20 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     marginHorizontal: 20,
   },
-  welcome: {
-    fontSize: 20,
+  middle: {
+    fontSize: 18,
     marginHorizontal: 2,
     marginVertical: 10,
     color: "#5D707F"
   },
-  temp: {
+  large: {
     fontSize: 40,
     // textAlign: 'center',
     margin: 10,
     color: "#5D707F"
   },
-  weather: {
-    fontSize: 18,
+  small: {
+    fontSize: 16,
     // textAlign: 'center',
     margin: 2,
     color: "#5D707F"
@@ -191,7 +201,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     marginTop: 10,
-    backgroundColor: 'black'
   },
 });
 const drawerStyles = {
