@@ -4,6 +4,7 @@ import axios from 'axios';
 import { AppRegistry, StatusBar, StyleSheet, Text, View, ScrollView, Button, Image, TextInput, KeyboardAvoidingView } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { fetchWeatherByCityName, fetchWeatherByCoords } from '../api'
+import Drawer from 'react-native-drawer';
 import Noise from './Noise';
 import AutoComplete from './AutoComplete';
 
@@ -93,35 +94,49 @@ export default class Main extends Component {
   render() {
     
     return (
-      <KeyboardAwareScrollView
-        style={{backgroundColor: "#fefffc"}}
-        resetScrollToCoords={{ x: 0, y: 0 }}
-        contentContainerStyle={styles.container}
-        scrollEnabled={false}
-        >
-      <StatusBar 
-        backgroundColor="#fefffc"
-        barStyle="dark-content"
-        translucent={true} />
-      <ScrollView>
-      <View style={styles.container}>
-      <View style={styles.border}>
+      // <KeyboardAwareScrollView
+      //   style={{backgroundColor: "white"}}
+      //   resetScrollToCoords={{ x: 0, y: 0 }}
+      //   contentContainerStyle={styles.container}
+      //   scrollEnabled={false}
+      //   >
+      // <StatusBar 
+      //   backgroundColor="white"
+      //   barStyle="dark-content"
+      //   translucent={true} />
+      // <ScrollView>
+      // <View style={styles.container}>
+      // <View style={styles.border}>
        
-        <Image
-          style={styles.weatherImg}
-          source={require('../../assets/images/default.jpg')}
-          />
-        <Button title="GET WEATHER" onPress={() => {this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric)}} />
-        <AutoComplete metric={this.state.metric} getFunc={this.getWeatherByCoords}/>
-        <Text style={styles.welcome}>{this.state.city}</Text>
-        <Text style={styles.weather}>{this.state.weather}</Text>
-        <Text style={styles.temp}>{this.state.temp} °C</Text>
-        <Noise />
+      //   <Image
+      //     style={styles.weatherImg}
+      //     source={require('../../assets/images/default.jpg')}
+      //     />
+      //   <Button title="GET WEATHER" onPress={() => {this.getWeatherByCoords(this.state.latitude, this.state.longitude, this.state.metric)}} />
+      //   <AutoComplete metric={this.state.metric} getFunc={this.getWeatherByCoords}/>
+      //   <Text style={styles.welcome}>{this.state.city}</Text>
+      //   <Text style={styles.weather}>{this.state.weather}</Text>
+      //   <Text style={styles.temp}>{this.state.temp} °C</Text>
+      //   <Noise />
       
-      </View>
-      </View>
-      </ScrollView>
-      </KeyboardAwareScrollView>
+      // </View>
+      // </View>
+      // </ScrollView>
+      // </KeyboardAwareScrollView>
+      <Drawer content={<Noise />}
+              type="overlay"
+              openDrawerOffset={0.382}
+              closedDrawerOffset={0.02}
+              tapToClose={true}
+              styles={drawerStyles}
+              tweenHandler={(ratio) => ({
+                drawerOverlay: { opacity: ratio, backgroundColor: "#08327d" }
+              })}
+      >
+      <View style={styles.container}>
+        <Text style={styles.weather}>Hello Hello</Text>
+        </View>
+      </Drawer>
     );
   }
 }
@@ -131,13 +146,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fefffc',
+    backgroundColor: 'white',
     marginTop: 10,
   },
   border: {
-    backgroundColor: '#fefffc',
+    backgroundColor: 'white',
     margin: 20,
-    borderColor: "#fefffc",
+    borderColor: "white",
   },
   textinput: {
     height: 40,
@@ -171,5 +186,11 @@ const styles = StyleSheet.create({
     height: 320
   }
 });
+const drawerStyles = {
+  // drawer: { shadowColor: 'white', shadowOpacity: 0.7, shadowRadius: 1},
+  main: {
+    paddingLeft: 3,
+  },
+}
 
 AppRegistry.registerComponent('Main', () => Main);
