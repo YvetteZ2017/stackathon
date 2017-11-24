@@ -1,17 +1,7 @@
 import React, { Component } from 'react';
-import { AppRegistry, StyleSheet, Text, View, Button, Image } from 'react-native';
+import { AppRegistry, StyleSheet, Image } from 'react-native';
 
 export default class WeatherImage extends Component {
-    // constructor(prop) {
-    //   super(prop)
-    //   this.state = {
-    //     id: null
-    //   }
-    // }
-
-    // componentDidMount(){
-    //   this.setState({id: this.props.weatherId})
-    // }
 
     render() {
         const id = this.props.weatherId;
@@ -30,8 +20,14 @@ export default class WeatherImage extends Component {
             return require('../../assets/images/fog.jpg')
           } else if (id>=800 && id<900) {
             return require('../../assets/images/cloudy.jpg')
+          } else if (id>=900 && id<903) {
+            return require('../../assets/images/extreme.jpg')
           } else if (id===904) {
             return require('../../assets/images/hot.jpg')
+          } else if (id===905) {
+            return require('../../assets/images/windy.jpg')
+          } else if (id===903 || id===906) {
+            return require('../../assets/images/cold.jpg')
           } else if (id<=952 && id<957) {
             return require('../../assets/images/breeze.jpg')
           } else {
@@ -40,7 +36,6 @@ export default class WeatherImage extends Component {
           }
         }
         let url = requireImg(id);
-        console.log('!!!!!!!!', url)
         return (
             <Image
             style={styles.weatherImg}

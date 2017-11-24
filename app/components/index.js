@@ -102,14 +102,12 @@ export default class Main extends Component {
                 : <Text style={styles.small}>{this.state.city} | {this.state.temp} °F</Text>
               }
               <Text style={styles.small}> | {this.state.weather_description}</Text>
-            
             </View>
             
-            
-            </View>
-            </View>
+          </View>
+          </View>
 
-            </View>
+        </View>
             
         <View style={{flex: 1, backgroundColor: '#08327d'}}>
           
@@ -121,7 +119,6 @@ export default class Main extends Component {
               
             }}>Forecast</Text>
             {
-              
               shorterList.map((element,i) => ( 
                 this.state.metric ? 
                 <Text style={{

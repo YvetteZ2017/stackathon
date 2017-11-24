@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { View, AppRegistry } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 const { google_places_api_key } = require('../../secret.js');
 
@@ -50,4 +50,6 @@ export default class GooglePlacesInput extends Component {
     );
     }
 }
+
+AppRegistry.registerComponent('AutoComplete', () => AutoComplete);
 

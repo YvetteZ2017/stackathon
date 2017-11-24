@@ -44,17 +44,3 @@ export default class Noise extends Component {
 
 AppRegistry.registerComponent('Noise', () => Noise);
 
-
-/*
-<Button title="NOISE" onPress={() => {
-        noiseSong.play((success) => {
-            if (success) {
-            noiseSong.stop()
-            } else {
-            console.log('playback failed due to audio decoding errors')
-            }
-        })
-        }}
-        />
-
-        */
