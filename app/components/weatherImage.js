@@ -55,6 +55,3 @@ const styles = StyleSheet.create({
   });
 
 AppRegistry.registerComponent('WeatherImage', () => WeatherImage);
-
-//            source={require('../../assets/images/hot.jpg')}
-//source={require(requireImg(id))}

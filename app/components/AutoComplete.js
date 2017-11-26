@@ -18,8 +18,6 @@ export default class GooglePlacesInput extends Component {
             fetchDetails={true}
             renderDescription={(row) => row.description} // custom description render
             onPress={(data, details = null) => { // 'details' is provided when fetchDetails = true
-                console.log(data);
-                console.log(details);
                 this.props.getFunc(details.geometry.location.lat, details.geometry.location.lng, this.props.metric)
             }}
             getDefaultValue={() => {
@@ -31,17 +29,10 @@ export default class GooglePlacesInput extends Component {
                 types: '(cities)'
             }}
             styles={{
-                textInputContainer: {
-                    backgroundColor: 'grey',
-                    borderTopWidth: 0,
-                    borderBottomWidth:0
+                predefinedPlacesDescription: {
+                  color: '#1faadb'
                 },
-                textInput: {
-                    height: 38,
-                    color: '#5d5d5d',
-                    fontSize: 16
-                },
-            }}
+              }}
         
             currentLocation={false} // Will add a 'Current location' button at the top of the predefined places list
             currentLocationLabel="Current location"

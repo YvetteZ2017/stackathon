@@ -16,11 +16,8 @@ getWeatherByCityName(input, metric) {
     if(inputArr.length>1) {
       countryName = inputArr[1].replace(/\s/g, '').toUpperCase();
     }
-    console.log('cityName: ', cityName, 'countryName: ', countryName)
       fetchWeatherByCityName(cityName, metric, countryName)
       .then(res => {
-          console.log('weather data fetched. temp: ', res.main.temp, 'weather: ', res.weather[0].main)
-          console.log('coords: ', this.state.latitude, ',', this.state.longitude)
           this.setState({
             city: res.name,
             temp: res.main.temp,

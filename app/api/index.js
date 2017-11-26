@@ -8,7 +8,6 @@ export const fetchWeatherByCityName = (city, metric, country) => {
     if (metric) {
         url = `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&units=metric&appid=${api_key}`;
     }
-    console.log('url: ', url)
     return axios.get(url)
     .then(res => res.data)
 }
@@ -18,7 +17,6 @@ export const fetchWeatherByCoords = (lat, lon, metric) => {
     if (metric) {
         url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${api_key}`;
     }
-    console.log('coords url: ', url)
     return axios.get(url)
     .then(res => res.data)
 }
@@ -29,7 +27,6 @@ export const fetchForecastByCoords = (lat, lon, metric) => {
     if (metric) {
         url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${api_key}`;
     }
-    console.log('coords url: ', url)
     return axios.get(url)
     .then(res => res.data)
 }
