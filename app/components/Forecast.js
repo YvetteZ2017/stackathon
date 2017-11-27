@@ -12,7 +12,7 @@ export default class Forecast extends Component {
               shorterList.map((element,i) => ( 
                 this.props.metric ? 
                 <Text style={styles.main_text} key={element.dt}> {element.dt_txt.slice(5, 16)}    {Math.round(element.main.temp)} °C    {element.weather[0].main}</Text>
-                : <Text style={styles.main_text} key={element.dt}> {element.dt_txt.slice(5, 16)}    {Math.round(element.main.temp)} °F    {element.weather[0].main}</Text>            
+                : <Text style={styles.main_text} key={element.dt}> {element.dt_txt.slice(5, 16)}    {Math.round(element.main.temp * 9 / 5 - 459.67)} °F    {element.weather[0].main}</Text>            
               
               ))
             }
@@ -24,7 +24,7 @@ export default class Forecast extends Component {
 const styles = StyleSheet.create({
   container_secondPage: {
     justifyContent: 'center',
-    backgroundColor: '#08327d',
+    backgroundColor: '#a5b8c4',
     margin: 10
   },
   title: {

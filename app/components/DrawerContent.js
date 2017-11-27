@@ -10,14 +10,19 @@ export default class DrawerContent extends Component {
         return (
             <KeyboardAwareScrollView>
             <View style={styles.container}>
-            <Button title="LOCAL WEATHER" color="white" onPress={() => {this.props.getWeatherByCoords(this.props.lat, this.props.lon, this.props.metric)}} />
+            <Button title="LOCAL WEATHER" color="white" onPress={() => {
+                this.props.getLocalWeather();
+            }} />
             <Noise />
-            <Text>Metric</Text>
-            <Switch
-            onValueChange={(value) => this.props.onUpdate(value)}
-            value={this.props.metric} />
+            <View style={{justifyContent: 'center', flexDirection: 'row', justifyContent: 'space-between'}}>
+                <Text style={styles.switch_text}>METRIC</Text>
+                <Switch
+                style={{marginBottom: 10, flex: 1}}
+                onValueChange={(value) => this.props.onUpdate(value)}
+                value={this.props.metric} />
+            </View>
             <View>
-                <AutoComplete metric={this.props.metric} getFunc={this.props.getFunc} /> 
+                <AutoComplete metric={this.props.metric} getWeather={this.props.getWeather} getForecast={this.props.getForecast} onSearch={this.props.onSearch}/> 
             </View>
         
             </View>
@@ -28,10 +33,16 @@ export default class DrawerContent extends Component {
 
 const styles = StyleSheet.create({
     container: {
-      justifyContent: 'center',
-      marginTop: 30,
-      marginHorizontal: 10
+        justifyContent: 'center',
+        marginTop: 30,
+        marginHorizontal: 10
     },
+    switch_text: {
+        flex: 1,
+        textAlign: 'center',
+        fontSize: 18,
+        color: 'white'
+    }
 });
 
 AppRegistry.registerComponent('DrawerContent', () => DrawerContent);

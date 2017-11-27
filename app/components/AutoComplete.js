@@ -18,7 +18,11 @@ export default class GooglePlacesInput extends Component {
             fetchDetails={true}
             renderDescription={(row) => row.description} // custom description render
             onPress={(data, details = null) => { // 'details' is provided when fetchDetails = true
-                this.props.getFunc(details.geometry.location.lat, details.geometry.location.lng, this.props.metric)
+                console.log('AutoComplete, getFunc, details', details);
+                console.log('AutoComplete, this.props: ', this.props);
+                this.props.onSearch(details.geometry.location.lat, details.geometry.location.lng, details.formatted_address);
+                this.props.getWeather(details.geometry.location.lat, details.geometry.location.lng, this.props.metric);
+                this.props.getForecast(details.geometry.location.lat, details.geometry.location.lng, this.props.metric)
             }}
             getDefaultValue={() => {
                 return ''; // text input default value

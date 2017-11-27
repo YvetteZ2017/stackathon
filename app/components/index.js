@@ -32,12 +32,18 @@ export default class Main extends Component {
           forecastList: [],
       }
     this.getWeatherByCoords = this.getWeatherByCoords.bind(this);
-    this.getForecastByCoords = this.getForecastByCoords.bind(this);
-    this.onUpdate = this.onUpdate.bind(this);
+	this.getForecastByCoords = this.getForecastByCoords.bind(this);
+	this.getLocalWeather = this.getLocalWeather.bind(this);
+	this.onUpdate = this.onUpdate.bind(this);
+	this.onSearch = this.onSearch.bind(this);
   }
 
   componentDidMount () {
-    navigator.geolocation.getCurrentPosition(position => {
+    this.getLocalWeather();
+  }
+
+  getLocalWeather() {
+	navigator.geolocation.getCurrentPosition(position => {
         this.setState({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
@@ -57,12 +63,15 @@ export default class Main extends Component {
   getWeatherByCoords(lat, lon, metric) {
     fetchWeatherByCoords(lat, lon, metric)
     .then(res => {
+		console.log('getWeatherByCoords: state ', this.state);
+		console.log('getWeatherByCoords, res: ', res)
       this.setState({
         city: res.name,
         temp: res.main.temp,
         weather: res.weather[0].main,
         weather_description: res.weather[0].description,
-        weatherId: res.weather[0].id
+		weatherId: res.weather[0].id,
+		metric: metric
       })
     })
   }
@@ -77,7 +86,17 @@ export default class Main extends Component {
   }
 
   onUpdate (data) {
-    this.setState({metric: data});
+	this.getForecastByCoords(this.state.latitude, this.state.longitude, data);
+	this.getWeatherByCoords(this.state.latitude, this.state.longitude, data);
+	this.setState({metric: data});
+  }
+
+  onSearch (latitude, longitude, city) {
+	this.setState({
+		latitude,
+		longitude,
+		city 
+	});
   }
 
 
@@ -88,7 +107,7 @@ export default class Main extends Component {
     return (
       <Drawer
       type="overlay"
-      content={<DrawerContent metric={this.state.metric} getFunc={this.getWeatherByCoords} getWeatherByCoords={this.getWeatherByCoords} lat={this.state.latitude} lon={this.state.longitude} onUpdate={this.onUpdate}/>}
+      content={<DrawerContent metric={this.state.metric} getWeather={this.getWeatherByCoords} getForecast={this.getForecastByCoords} lat={this.state.latitude} lon={this.state.longitude} onUpdate={this.onUpdate} onSearch={this.onSearch} getLocalWeather={this.getLocalWeather}/>}
       tapToClose={true}
       openDrawerOffset={0.382}
       panCloseMask={0.2}
@@ -117,17 +136,17 @@ export default class Main extends Component {
             <View style={{flex: 2}}>
               {
                 this.state.metric ? 
-                <Text style={styles.small}>{this.state.city} | {this.state.temp} °C</Text> 
-                : <Text style={styles.small}>{this.state.city} | {this.state.temp} °F</Text>
+                <Text style={styles.small}>  {this.state.city} | {Math.round(this.state.temp)} °C</Text> 
+                : <Text style={styles.small}>  {this.state.city} | {Math.round(this.state.temp * 9 / 5 - 459.67)} °F</Text>
               }
-              <Text style={styles.small}>{this.state.weather_description}</Text>
+              <Text style={styles.small}>  {this.state.weather_description}</Text>
             </View>
 
           </View>
           </View>
         </View>
 
-        <View style={{flex: 1, backgroundColor: '#08327d'}}>
+        <View style={{flex: 1, backgroundColor: '#a5b8c4'}}>
           <Forecast shorterList={shorterList} metric={this.state.metric}/>
         </View> 
 
@@ -169,7 +188,7 @@ const styles = StyleSheet.create({
   }
 });
 const drawerStyles = {
-  drawer: { opacity: 0.9, backgroundColor: '#08327d'},
+  drawer: { opacity: 0.9, backgroundColor: '#a5b8c4'},
   main: {
     paddingRight: 2,
   },
