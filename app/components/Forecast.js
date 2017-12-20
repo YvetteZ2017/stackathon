@@ -6,11 +6,22 @@ const { Surface, Group, Shape, Path } = ART;
 const d3 = { scale, shape };
 
 export default class Forecast extends Component {
+  constructor() {
+    super();
+    this.state = {
+      dataDisplaied: 0
+    }
+  }
+
+  // componentDidMound() {
+  //   this.setState({dataDisplaied: this.props.forecastList[0]})
+  // }
 
   render() {
     
     const forecastList = this.props.forecastList;
     console.log('forcast: ', forecastList)
+    console.log('state.data: ', this.state.dataDisplaied)
     const lastElement = forecastList.pop();
     const width = 320;
     const height = 380;
@@ -58,7 +69,8 @@ export default class Forecast extends Component {
           <Text style={styles.title}>Forecast</Text>
           {
             (forecastList.length) ?
-          <Surface width={320} height={350} style={styles.surface}>
+          (<View>
+            <Surface width={320} height={350} style={styles.surface}>
             <Group x={0} y={0}>
                 <Shape
                 d={curve}
@@ -80,9 +92,19 @@ export default class Forecast extends Component {
             )
               })
             }
-          </Surface> : null
+          </Surface> 
+          <View>
+          <Text style={styles.main_text}>{forecastList[this.state.dataDisplaied].dt_txt}</Text>
+          <Text style={styles.main_text}>{
+            this.props.metric ? 
+            Math.round(forecastList[this.state.dataDisplaied].main.temp) + '°C':
+            Math.round((forecastList[this.state.dataDisplaied].main.temp) * 9 / 5 - 459.67) + '°F'
+          }</Text>          
+          </View>
+          </View>
+        )
+          : null
           }
-          <Text style={styles.main_text}>Forecast of one time</Text>
         </View>
       )
     }
@@ -91,7 +113,6 @@ export default class Forecast extends Component {
 const styles = StyleSheet.create({
   container_secondPage: {
     justifyContent: 'center',
-    // backgroundColor: '#a5b8c4',
     backgroundColor: '#fbfbfb',    
     margin: 10
   },
@@ -101,8 +122,8 @@ const styles = StyleSheet.create({
     color: "black",
   },
   main_text: {
-    fontSize: 16,
-    margin: 4,
+    fontSize: 18,
+    margin: 14,
     color: "black",
   },
   surface: {
