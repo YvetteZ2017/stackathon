@@ -9,7 +9,7 @@ import { fetchWeatherByCoords, fetchForecastByCoords } from '../api';
 import DrawerContent from './DrawerContent';
 import AutoComplete from './AutoComplete';
 import Forecast from './Forecast';
-import WeatherImage from './WeatherImage';
+import WeatherImage from './weatherImage';
 
 
 const DEFAULT_CITY = 'New York';
@@ -109,8 +109,8 @@ export default class Main extends Component {
       content={<DrawerContent metric={this.state.metric} getWeather={this.getWeatherByCoords} getForecast={this.getForecastByCoords} lat={this.state.latitude} lon={this.state.longitude} onUpdate={this.onUpdate} onSearch={this.onSearch} getLocalWeather={this.getLocalWeather}/>}
       tapToClose={true}
       openDrawerOffset={0.382}
-      panCloseMask={0.2}
-      closedDrawerOffset={0.015}
+      panCloseMask={0.3}
+      closedDrawerOffset={0.01}
       styles={drawerStyles}
       tweenHandler={(ratio) => ({
         main: { opacity:(2-ratio)/2 }
@@ -145,8 +145,8 @@ export default class Main extends Component {
           </View>
         </View>
 
-        <View style={{flex: 1, backgroundColor: '#a5b8c4'}}>
-          <Forecast shorterList={this.state.forecastList} metric={this.state.metric}/>
+        <View style={{flex: 1, backgroundColor: '#fbfbfb'}}>
+          <Forecast forecastList={this.state.forecastList} metric={this.state.metric}/>
         </View> 
 
       </Pages>
@@ -154,7 +154,6 @@ export default class Main extends Component {
     );
   }
 }
-//#a5b8c4
 
 const styles = StyleSheet.create({
   container: {
@@ -188,10 +187,7 @@ const styles = StyleSheet.create({
   }
 });
 const drawerStyles = {
-  drawer: { opacity: 0.9, backgroundColor: '#a5b8c4'},
-  main: {
-    paddingRight: 2,
-  },
+  drawer: { opacity: 0.9, backgroundColor: '#8e1f13'},
 }
 
 AppRegistry.registerComponent('Main', () => Main);
