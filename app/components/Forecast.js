@@ -7,56 +7,13 @@ const d3 = { scale, shape };
 
 export default class Forecast extends Component {
 
-  constructor() {
-    super();
-    this.state = {
-      curve: ''
-    }
-    this.generateCurve = this.generateCurve.bind(this)
-  }
-
-  componentDidMount() {
-    const curve = this.generateCurve();
-    this.setState({ curve })
-  }
-
-  generateCurve() {
-    const shorterList = this.props.shorterList;
-    const lastElement = shorterList.pop();
-    const width = 300;
-    
-    if(shorterList.length) {
-      const scaleX = scale.scaleLinear()
-      .domain([shorterList[0].dt, lastElement.dt])
-      .range([0, width]);
-
-      const rangeY = shorterList.reduce((all, cur) => {
-        return [Math.min(all[0], cur.main.temp), Math.max(all[1], cur.main.temp)]
-      },[400, -100]);
-
-      const domainY = [Math.round(rangeY[0]-5), Math.round(rangeY[1]+5)];
-
-      const scaleY = scale.scaleLinear()
-      .domain(domainY)
-      .range([0, width]);
-      
-        
-      const curveLine = shape.line()
-      .x(d => scaleX(d.dt))
-      .y(d => scaleY(d.main.temp))
-      .curve(shape.curveNatural);
-
-      const curve = curveLine(shorterList)
-      return curve;
-    }
-  }
-
   render() {
     
     const shorterList = this.props.shorterList;
     const lastElement = shorterList.pop();
-    const width = 300;
-    let curve = ''
+    const width = 320;
+    const height = 380;
+    let curve = '';
     
     if(shorterList.length) {
       const scaleX = scale.scaleLinear()
@@ -67,19 +24,23 @@ export default class Forecast extends Component {
         return [Math.min(all[0], cur.main.temp), Math.max(all[1], cur.main.temp)]
       },[400, -100]);
 
-      const domainY = [Math.round(rangeY[0]-5), Math.round(rangeY[1]+5)];
+      const domainY = [Math.round(rangeY[0]-2), Math.round(rangeY[1]+2)];
 
       const scaleY = scale.scaleLinear()
       .domain(domainY)
-      .range([0, width]);
+      .range([0, height]);
       
         
       const curveLine = shape.line()
       .x(d => scaleX(d.dt))
       .y(d => scaleY(d.main.temp))
-      .curve(shape.curveNatural);
+      .curve(shape.curveLinear);
 
-      curve = curveLine(shorterList)
+      curve = curveLine(shorterList);
+
+      dots = shorterList.map((data) => {
+        
+      })
 
     }
 
@@ -88,7 +49,7 @@ export default class Forecast extends Component {
           <Text style={styles.title}>Forecast</Text>
           {
             (shorterList.length) ?
-          <Surface width={320} height={320}>
+          <Surface width={320} height={350}>
             <Group x={0} y={0}>
                 <Shape
                 d={curve}
@@ -107,6 +68,7 @@ const styles = StyleSheet.create({
   container_secondPage: {
     justifyContent: 'center',
     backgroundColor: '#a5b8c4',
+    // backgroundColor: 'blue',    
     margin: 10
   },
   title: {

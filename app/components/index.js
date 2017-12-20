@@ -6,7 +6,6 @@ import Drawer from 'react-native-drawer';
 import { AppRegistry, StatusBar, StyleSheet, Text, View, Button, KeyboardAvoidingView } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { fetchWeatherByCoords, fetchForecastByCoords } from '../api';
-import Noise from './Noise';
 import DrawerContent from './DrawerContent';
 import AutoComplete from './AutoComplete';
 import Forecast from './Forecast';
@@ -155,6 +154,7 @@ export default class Main extends Component {
     );
   }
 }
+//#a5b8c4
 
 const styles = StyleSheet.create({
   container: {
