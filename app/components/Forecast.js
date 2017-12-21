@@ -12,19 +12,20 @@ export default class Forecast extends Component {
       height: 380,      
       dataDisplaied: 0,
       dataList: [],
-      curve: '',
-      dot: '',
       forecastList: this.props.forecastList,
-      lastElement: {}
+      lastElement: {},
+      specialWeatherList: []
     }
     this.handleOnPress = this.handleOnPress.bind(this);
+    this.filterSpecialWeather = this.filterSpecialWeather.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
       forecastList: nextProps.forecastList,
       lastElement: nextProps.forecastList[nextProps.forecastList.length - 1],
-      dataList: createDataList(nextProps.forecastList, this.state.width, this.state.height)
+      dataList: createDataList(nextProps.forecastList, this.state.width, this.state.height),
+      specialWeatherList: this.filterSpecialWeather(nextProps.forecastList)
     });
   }
 
@@ -36,6 +37,17 @@ export default class Forecast extends Component {
     if (differenceArr[index] < 3) {
       this.setState({dataDisplaied: index});
     }
+  }
+
+  filterSpecialWeather(arr) {
+    const specialWeatherList = [];
+    arr.forEach((d, i) => {
+      if (Number(d.weather[0].icon.slice(0,2)) > 8) {
+        specialWeatherList.push(i);
+      }
+    });
+    console.log('!!!', specialWeatherList)
+    return specialWeatherList;
   }
 
   render() {
@@ -54,10 +66,20 @@ export default class Forecast extends Component {
     .type(shape.symbolCircle)
     .size(1);
 
+    const starPath = shape.symbol()
+    .type(shape.symbolStar)
+    .size(20);
+
     const dataList = this.state.dataList;
     const curve = curvePath(dataList);      
     const dot = dotPath();
-    const dataOnDisplaied = dataList[this.state.dataDisplaied]
+    const star = starPath();
+    const dataOnDisplaied = dataList[this.state.dataDisplaied];
+
+    const specialWeathers = [];
+    this.state.specialWeatherList.forEach(x => {
+      specialWeathers.push(dataList[x])
+    })
 
     return (
         
@@ -90,11 +112,23 @@ export default class Forecast extends Component {
                     </Group>)
                 })
               }
+              {
+                specialWeathers.map((data, i) => {
+                  return (
+                    <Group x={data.x} y={data.y} key={i}>
+                      <Shape
+                        d={star}
+                        stroke="#a02518"
+                        strokeWidth={2}
+                      />
+                    </Group>)
+                })
+              }
               <Group x={dataOnDisplaied.x} y={dataOnDisplaied.y}>
                 <Shape
                   d={dot}
                   stroke="#a02518"
-                  strokeWidth={8}
+                  strokeWidth={10}
                 />
               </Group>
           </Surface>
