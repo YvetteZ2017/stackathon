@@ -9,7 +9,7 @@ import { fetchWeatherByCoords, fetchForecastByCoords } from '../api';
 import DrawerContent from './DrawerContent';
 import AutoComplete from './AutoComplete';
 import Forecast from './Forecast';
-import WeatherImage from './weatherImage';
+import WeatherImage from './WeatherImage';
 
 
 const DEFAULT_CITY = 'New York';

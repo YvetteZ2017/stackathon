@@ -1,113 +1,121 @@
 import React, { Component } from 'react';
-import { ART, AppRegistry, StyleSheet, Text, View, Button, Image } from 'react-native';
-import * as scale from 'd3-scale';
+import { ART, AppRegistry, StyleSheet, Text, View, TouchableHighlight, TouchableOpacity } from 'react-native';
 import * as shape from 'd3-shape';
-const { Surface, Group, Shape, Path } = ART;
-const d3 = { scale, shape };
+import createDataList from '../utils/createDataList';
+const { Surface, Group, Shape } = ART;
 
 export default class Forecast extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      dataDisplaied: 0
+      width: 320,
+      height: 380,      
+      dataDisplaied: 0,
+      dataList: [],
+      curve: '',
+      dot: '',
+      forecastList: this.props.forecastList,
+      lastElement: {}
+    }
+    this.handleOnPress = this.handleOnPress.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      forecastList: nextProps.forecastList,
+      lastElement: nextProps.forecastList[nextProps.forecastList.length - 1],
+      dataList: createDataList(nextProps.forecastList, this.state.width, this.state.height)
+    });
+  }
+
+  handleOnPress(event) {
+    event.preventDefault();
+    const x = event.nativeEvent.pageX - 29;
+    const differenceArr = this.state.dataList.map((d, i) => Math.abs(x - d.x))
+    const index = differenceArr.indexOf(Math.min(...differenceArr));
+    if (differenceArr[index] < 3) {
+      this.setState({dataDisplaied: index});
     }
   }
 
-  // componentDidMound() {
-  //   this.setState({dataDisplaied: this.props.forecastList[0]})
-  // }
-
   render() {
     
-    const forecastList = this.props.forecastList;
+    const forecastList = this.state.forecastList;
     console.log('forcast: ', forecastList)
     console.log('state.data: ', this.state.dataDisplaied)
-    const lastElement = forecastList.pop();
-    const width = 320;
-    const height = 380;
-    let curve = '';
-    let dot;
-    let dataList;
+    const lastElement = this.state.lastElement;
     
-    if(forecastList.length) {
-      const scaleX = scale.scaleLinear()
-      .domain([forecastList[0].dt, lastElement.dt])
-      .range([5, width - 5]);
+    const curvePath = shape.line()
+    .x(d => d.x)
+    .y(d => d.y)
+    .curve(shape.curveNatural);
 
-      const rangeY = forecastList.reduce((all, cur) => {
-        return [Math.min(all[0], cur.main.temp), Math.max(all[1], cur.main.temp)]
-      },[400, -100]);
+    const dotPath = shape.symbol()
+    .type(shape.symbolCircle)
+    .size(1);
 
-      const domainY = [Math.round(rangeY[0]-2), Math.round(rangeY[1]+2)];
+    const dataList = this.state.dataList;
+    const curve = curvePath(dataList);      
+    const dot = dotPath();
+    const dataOnDisplaied = dataList[this.state.dataDisplaied]
 
-      const scaleY = scale.scaleLinear()
-      .domain(domainY)
-      .range([0, height]);
-      
+    return (
         
-      const curveLine = shape.line()
-      .x(d => d.x)
-      .y(d => d.y)
-      .curve(shape.curveNatural);
-
-      const dotPath = shape.symbol()
-      .type(shape.symbolCircle)
-      .size(1);
-
-      dataList = forecastList.map(d => {
-        return {x: scaleX(d.dt), y: scaleY(d.main.temp)}
-      })
-
-      curve = curveLine(dataList);      
-      dot = dotPath();
-      
-      
-    }
-
-        return (
-          <View style={styles.container_secondPage}>
-          <Text style={styles.title}>Forecast</Text>
-          {
-            (forecastList.length) ?
-          (<View>
-            <Surface width={320} height={350} style={styles.surface}>
-            <Group x={0} y={0}>
-                <Shape
-                d={curve}
-                stroke="#a02518"
-                strokeWidth={1}
-              />
-              
-            </Group>
-            {
-              dataList.map((data, i) => {
-                return (
-                  <Group x={data.x} y={data.y} key={i}>
-                    <Shape
-                      d={dot}
-                      stroke="#a02518"
-                      strokeWidth={2}
-                    />
-                  </Group>
-            )
-              })
-            }
-          </Surface> 
+      <View style={styles.container_secondPage}>
+        <Text style={styles.title}>Forecast</Text>
+        {
+          (forecastList.length) ?
+        (
           <View>
-          <Text style={styles.main_text}>{forecastList[this.state.dataDisplaied].dt_txt}</Text>
-          <Text style={styles.main_text}>{
-            this.props.metric ? 
-            Math.round(forecastList[this.state.dataDisplaied].main.temp) + '°C':
-            Math.round((forecastList[this.state.dataDisplaied].main.temp) * 9 / 5 - 459.67) + '°F'
-          }</Text>          
+          <TouchableOpacity onPress={this.handleOnPress}>
+            <View>
+            <Surface width={this.state.width} height={this.state.height} style={styles.surface}>
+              <Group x={0} y={0}>
+                  <Shape
+                  d={curve}
+                  stroke="#a02518"
+                  strokeWidth={1}
+                />
+                
+              </Group>
+              {
+                dataList.map((data, i) => {
+                  return (
+                    <Group x={data.x} y={data.y} key={i}>
+                      <Shape
+                        d={dot}
+                        stroke="#a02518"
+                        strokeWidth={2}
+                      />
+                    </Group>)
+                })
+              }
+              <Group x={dataOnDisplaied.x} y={dataOnDisplaied.y}>
+                <Shape
+                  d={dot}
+                  stroke="#a02518"
+                  strokeWidth={8}
+                />
+              </Group>
+          </Surface>
           </View>
-          </View>
-        )
-          : null
-          }
+          </TouchableOpacity>
+        <View>
+        <Text style={styles.main_text}>{forecastList[this.state.dataDisplaied].dt_txt}</Text>
+        <Text style={styles.main_text}>{
+          this.props.metric ? 
+          Math.round(forecastList[this.state.dataDisplaied].main.temp) + '°C':
+          Math.round((forecastList[this.state.dataDisplaied].main.temp) * 9 / 5 - 459.67) + '°F'
+        }  {forecastList[this.state.dataDisplaied].weather[0].main}</Text>
         </View>
+        </View>
+        
       )
-    }
+        : null
+        }
+      </View>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
@@ -117,7 +125,7 @@ const styles = StyleSheet.create({
     margin: 10
   },
   title: {
-    fontSize: 40,
+    fontSize: 42,
     margin: 10,
     color: "black",
   },
