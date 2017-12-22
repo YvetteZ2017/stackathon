@@ -1,4 +1,4 @@
-import * as scale from 'd3-scale';
+import * as scale from 'd3-scale'; // use d3-scale to convert data value to svg coordinates
 
 
 export default createDataList = (forecastList, width, height) => {
