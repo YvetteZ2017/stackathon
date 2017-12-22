@@ -19,7 +19,7 @@ export default createDataList = (forecastList, width, height) => {
     
     return scale.scaleLinear()
     .domain(domainY)
-    .range([0, height])(num)
+    .range([height, 0])(num)
   }
 
 	const dataList = forecastList.map(d => {
