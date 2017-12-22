@@ -46,15 +46,12 @@ export default class Forecast extends Component {
         specialWeatherList.push(i);
       }
     });
-    console.log('!!!', specialWeatherList)
     return specialWeatherList;
   }
 
   render() {
     
     const forecastList = this.state.forecastList;
-    console.log('forcast: ', forecastList)
-    console.log('state.data: ', this.state.dataDisplaied)
     const lastElement = this.state.lastElement;
     
     const curvePath = shape.line()
