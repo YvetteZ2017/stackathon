@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ART, AppRegistry, StyleSheet, Text, View, TouchableHighlight, TouchableOpacity } from 'react-native';
-import * as shape from 'd3-shape';
+import * as shape from 'd3-shape'; //use d3-shape to generate svg paths
 import createDataList from '../utils/createDataList';
 import { celsiusToFahrenheit } from '../utils/metric';
 const { Surface, Group, Shape } = ART;
@@ -11,7 +11,7 @@ export default class Forecast extends Component {
     this.state = {
       width: 320,
       height: 380,      
-      dataDisplaied: 0,
+      dataDisplayed: 0,
       dataList: [],
       forecastList: this.props.forecastList,
       lastElement: {},
@@ -38,7 +38,7 @@ export default class Forecast extends Component {
     const differenceArr = this.state.dataList.map((d, i) => Math.abs(x - d.x)) //the horizontal value represents the time of each forecast, which would never be repeated
     const index = differenceArr.indexOf(Math.min(...differenceArr));
     if (differenceArr[index] < sensitivity) { //Find the closest dot to the touched point.
-      this.setState({dataDisplaied: index});
+      this.setState({dataDisplayed: index});
     }
   }
 
@@ -75,7 +75,7 @@ export default class Forecast extends Component {
     const curve = curvePath(dataList);      
     const dot = dotPath();
     const star = starPath();
-    const dataOnDisplaied = dataList[this.state.dataDisplaied];
+    const dataOnDisplaied = dataList[this.state.dataDisplayed];
 
     const specialWeathers = [];
     this.state.specialWeatherList.forEach(x => {
@@ -136,12 +136,12 @@ export default class Forecast extends Component {
           </View>
           </TouchableOpacity>
         <View>
-        <Text style={styles.main_text}>{forecastList[this.state.dataDisplaied].dt_txt}</Text>
+        <Text style={styles.main_text}>{forecastList[this.state.dataDisplayed].dt_txt}</Text>
         <Text style={styles.main_text}>{
           this.props.metric ? 
-          Math.round(forecastList[this.state.dataDisplaied].main.temp) + '°C':
-          Math.round(celsiusToFahrenheit(forecastList[this.state.dataDisplaied].main.temp)) + '°F'
-        }  {forecastList[this.state.dataDisplaied].weather[0].main}</Text>
+          Math.round(forecastList[this.state.dataDisplayed].main.temp) + '°C':
+          Math.round(celsiusToFahrenheit(forecastList[this.state.dataDisplayed].main.temp)) + '°F'
+        }  {forecastList[this.state.dataDisplayed].weather[0].main}</Text>
         </View>
         </View>
         

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Sound from 'react-native-sound';
 import axios from 'axios';
 import { Pages } from 'react-native-pages';
 import Drawer from 'react-native-drawer';
