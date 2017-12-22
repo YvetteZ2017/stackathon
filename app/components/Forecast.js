@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { ART, AppRegistry, StyleSheet, Text, View, TouchableHighlight, TouchableOpacity } from 'react-native';
 import * as shape from 'd3-shape';
 import createDataList from '../utils/createDataList';
+import { celsiusToFahrenheit } from '../utils/metric';
 const { Surface, Group, Shape } = ART;
 
 export default class Forecast extends Component {
@@ -31,18 +32,21 @@ export default class Forecast extends Component {
 
   handleOnPress(event) {
     event.preventDefault();
-    const x = event.nativeEvent.pageX - 29;
-    const differenceArr = this.state.dataList.map((d, i) => Math.abs(x - d.x))
+    const marginWidth = 29;
+    const sensitivity = 4;
+    const x = event.nativeEvent.pageX - marginWidth; //x is the horizontal coordinate of the touching event.
+    const differenceArr = this.state.dataList.map((d, i) => Math.abs(x - d.x)) //the horizontal value represents the time of each forecast, which would never be repeated
     const index = differenceArr.indexOf(Math.min(...differenceArr));
-    if (differenceArr[index] < 3) {
+    if (differenceArr[index] < sensitivity) { //Find the closest dot to the touched point.
       this.setState({dataDisplaied: index});
     }
   }
 
   filterSpecialWeather(arr) {
     const specialWeatherList = [];
+    const specialWeatherIconRange = 8;
     arr.forEach((d, i) => {
-      if (Number(d.weather[0].icon.slice(0,2)) > 8) {
+      if (Number(d.weather[0].icon.slice(0,2)) > specialWeatherIconRange) {
         specialWeatherList.push(i);
       }
     });
@@ -92,7 +96,7 @@ export default class Forecast extends Component {
               <Group x={0} y={0}>
                   <Shape
                   d={curve}
-                  stroke="#a02518"
+                  stroke={colors.darkRed}
                   strokeWidth={1}
                 />
                 
@@ -103,7 +107,7 @@ export default class Forecast extends Component {
                     <Group x={data.x} y={data.y} key={i}>
                       <Shape
                         d={dot}
-                        stroke="#a02518"
+                        stroke={colors.darkRed}
                         strokeWidth={2}
                       />
                     </Group>)
@@ -115,7 +119,7 @@ export default class Forecast extends Component {
                     <Group x={data.x} y={data.y} key={i}>
                       <Shape
                         d={star}
-                        stroke="#a02518"
+                        stroke={colors.darkRed}
                         strokeWidth={2}
                       />
                     </Group>)
@@ -124,7 +128,7 @@ export default class Forecast extends Component {
               <Group x={dataOnDisplaied.x} y={dataOnDisplaied.y}>
                 <Shape
                   d={dot}
-                  stroke="#a02518"
+                  stroke={colors.darkRed}
                   strokeWidth={10}
                 />
               </Group>
@@ -136,7 +140,7 @@ export default class Forecast extends Component {
         <Text style={styles.main_text}>{
           this.props.metric ? 
           Math.round(forecastList[this.state.dataDisplaied].main.temp) + '°C':
-          Math.round((forecastList[this.state.dataDisplaied].main.temp) * 9 / 5 - 459.67) + '°F'
+          Math.round(celsiusToFahrenheit(forecastList[this.state.dataDisplaied].main.temp)) + '°F'
         }  {forecastList[this.state.dataDisplaied].weather[0].main}</Text>
         </View>
         </View>
@@ -171,5 +175,9 @@ const styles = StyleSheet.create({
     margin: 14
   }
 })
+
+const colors = {
+  darkRed: '#a02518',
+}
 
 AppRegistry.registerComponent('Forecast', () => Forecast);

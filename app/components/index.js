@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Sound from 'react-native-sound';
 import axios from 'axios';
-import {Pages} from 'react-native-pages';
+import { Pages } from 'react-native-pages';
 import Drawer from 'react-native-drawer';
 import { AppRegistry, StatusBar, StyleSheet, Text, View, Button, KeyboardAvoidingView } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -10,6 +10,7 @@ import DrawerContent from './DrawerContent';
 import AutoComplete from './AutoComplete';
 import Forecast from './Forecast';
 import WeatherImage from './WeatherImage';
+import { celsiusToFahrenheit } from '../utils/metric';
 
 
 const DEFAULT_CITY = 'New York';
@@ -62,8 +63,6 @@ export default class Main extends Component {
   getWeatherByCoords(lat, lon, metric) {
     fetchWeatherByCoords(lat, lon, metric)
     .then(res => {
-		console.log('getWeatherByCoords: state ', this.state);
-		console.log('getWeatherByCoords, res: ', res)
       this.setState({
         city: res.name,
         temp: res.main.temp,
@@ -100,8 +99,6 @@ export default class Main extends Component {
 
 
   render() {
-    let shorterList = [];
-    this.state.forecastList.forEach((x, i) => {if((i%3)===0) {shorterList.push(x)}});
 
     return (
       <Drawer
@@ -136,7 +133,7 @@ export default class Main extends Component {
               {
                 this.state.metric ? 
                 <Text style={styles.small}>  {this.state.city} | {Math.round(this.state.temp)} °C</Text> 
-                : <Text style={styles.small}>  {this.state.city} | {Math.round(this.state.temp * 9 / 5 - 459.67)} °F</Text>
+                : <Text style={styles.small}>  {this.state.city} | {Math.round(celsiusToFahrenheit(this.state.temp))} °F</Text>
               }
               <Text style={styles.small}>  {this.state.weather_description}</Text>
             </View>
@@ -145,7 +142,7 @@ export default class Main extends Component {
           </View>
         </View>
 
-        <View style={{flex: 1, backgroundColor: '#fbfbfb'}}>
+        <View style={styles.forecastPage}>
           <Forecast forecastList={this.state.forecastList} metric={this.state.metric}/>
         </View> 
 
@@ -184,6 +181,10 @@ const styles = StyleSheet.create({
     padding: 10,
     width: 320, 
     height: 320
+  },
+  forecastPage: {
+    flex: 1,
+    backgroundColor: '#fbfbfb'
   }
 });
 const drawerStyles = {
