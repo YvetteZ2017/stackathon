@@ -12,10 +12,10 @@ export default class DrawerContent extends Component {
             <Button title="LOCAL WEATHER" color="white" onPress={() => {
                 this.props.getLocalWeather();
             }} />
-            <View style={{justifyContent: 'center', flexDirection: 'row', justifyContent: 'space-between'}}>
+            <View style={styles.metric_view}>
                 <Text style={styles.switch_text}>METRIC</Text>
                 <Switch
-                style={{marginBottom: 10, flex: 1}}
+                style={{flex: 1}}
                 onValueChange={(value) => this.props.onUpdate(value)}
                 value={this.props.metric} />
             </View>
@@ -32,8 +32,14 @@ export default class DrawerContent extends Component {
 const styles = StyleSheet.create({
     container: {
         justifyContent: 'center',
-        marginTop: 30,
+        marginTop: 50,
         marginHorizontal: 10
+    },
+    metric_view:{
+        justifyContent: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        margin: 20
     },
     switch_text: {
         flex: 1,
